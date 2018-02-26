@@ -34,7 +34,10 @@ class FFProbe:
             self.created = None
             self.duration = None
             self.start = None
-            self.bitrate = None
+            self.bit_rate = None
+            self.sample_rate = None
+            self.bits_per_sample = None
+            self.channels = None
             self.streams = []
             self.video = []
             self.audio = []
@@ -47,6 +50,23 @@ class FFProbe:
                     self.streams.append(FFStream(data_lines))
                     data_lines = []
                 else:
+                    kvPair = a.strip().split('=')
+                    if len(kvPair) > 1:
+                        if kvPair[0] == "codec_name":
+                            self.format = kvPair[1]
+                        elif kvPair[0] == "created":
+                            self.created = kvPair[1]
+                        elif kvPair[0] == "duration":
+                            self.duration = float(kvPair[1])
+                        elif kvPair[0] == "bit_rate":
+                            self.bit_rate = int(kvPair[1])
+                        elif kvPair[0] == "sample_rate":
+                            self.sample_rate = int(kvPair[1])
+                        elif kvPair[0] == "bits_per_sample":
+                            self.bits_per_sample = int(kvPair[1])
+                        elif kvPair[0] == "channels":
+                            self.channels = int(kvPair[1])
+
                     data_lines.append(a)
             for a in iter(p.stderr.readline, b''):
                 a = a.decode('UTF-8')
